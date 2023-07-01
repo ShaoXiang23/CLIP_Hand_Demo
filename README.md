@@ -40,6 +40,7 @@ FreiHAND Dataset
   ```
   python main.py
   ```
+  <img src="./images/bs16.png">
 
   
   
