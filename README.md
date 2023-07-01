@@ -41,7 +41,7 @@ FreiHAND Dataset
   ```
   python main.py
   ```
-  <img src="./images/bs16.png" width=“100px”>
+  <img src="./images/bs16.png" width=“373”>
 
   
   
