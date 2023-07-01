@@ -19,6 +19,18 @@ A simple Zero-Shot demo for CLIP-Hand 3D.
 
 ## Download Datasets
 FreiHAND Dataset
-+ Download Links [link](https://lmb.informatik.uni-freiburg.de/projects/freihand/)
++ Download [link](https://lmb.informatik.uni-freiburg.de/projects/freihand/)
+
+## Run Zero Shot Demo
++ Put Pre-train Weights on your Ubuntu Disk, and record its location.
+  ```
+  /home/anonymous/CLIP_HAND_3D_0402.pth.tar
+  ```
++ Extract the FreiHAND dataset to Ubuntu Disk and record its location.
+  ```
+  /home/anonymous/FreiHAND
+  ```
++ Modify Parameters in demo/
+
   
   
