@@ -41,7 +41,10 @@ FreiHAND Dataset
   ```
   python main.py
   ```
-  <img src="https://github.com/ShaoXiang23/CLIP_Hand_Demo/blob/main/images/bs16.png" width="50%">
+  + BS = 12
+    <p align="middle"> 
+    <img src="https://github.com/ShaoXiang23/CLIP_Hand_Demo/blob/main/images/bs16.png" width="75%">
+    </p> 
 
   
   
