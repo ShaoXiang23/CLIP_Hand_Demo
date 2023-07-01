@@ -16,4 +16,9 @@ A simple Zero-Shot demo for CLIP-Hand 3D.
 + Install CLIP
   Please follow [CLIP links](https://github.com/openai/CLIP) to install CLIP module.
 + Download Pre-train Weights
+
+## Download Datasets
+FreiHAND Dataset
++ Download Links [link](https://lmb.informatik.uni-freiburg.de/projects/freihand/)
+  
   
