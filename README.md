@@ -63,7 +63,7 @@ FreiHAND Dataset
     </p> 
   + batch size = 128, id = 11, Zero-Shot Result: x: 91.54%, y: 99.98%, z: 86.88%
     <p align="middle"> 
-    <img src="https://github.com/ShaoXiang23/CLIP_Hand_Demo/blob/main/images/bs16.png" width="75%">
+    <img src="https://github.com/ShaoXiang23/CLIP_Hand_Demo/blob/main/images/bs128.png" width="75%">
     </p> 
   + batch size = 256, id = 133, Zero-Shot Result: x: 88.28%, y: 93.92%, z: 88.22%
     <p align="middle"> 
