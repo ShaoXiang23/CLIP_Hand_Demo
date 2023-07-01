@@ -41,7 +41,10 @@ FreiHAND Dataset
   ```
   python main.py
   ```
-  + BS = 16, Id = 5, Zero-Shot Result.
+  + batch size = 16, id = 5, Zero-Shot Result.
+    ```
+    x: 99.99%, y: 99.99%, z: 99.99%
+    ```
     <p align="middle"> 
     <img src="https://github.com/ShaoXiang23/CLIP_Hand_Demo/blob/main/images/bs16.png" width="75%">
     </p> 
