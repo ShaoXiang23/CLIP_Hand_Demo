@@ -41,7 +41,7 @@ FreiHAND Dataset
   ```
   python main.py
   ```
-  + BS = 12
+  + BS = 16, Id = 5, Zero-Shot Result.
     <p align="middle"> 
     <img src="https://github.com/ShaoXiang23/CLIP_Hand_Demo/blob/main/images/bs16.png" width="75%">
     </p> 
