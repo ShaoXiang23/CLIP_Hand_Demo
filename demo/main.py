@@ -12,8 +12,8 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 if __name__ == '__main__':
     ''' Please Modify the download weight path. '''
-    WEIGHT_PATH = '/home/gsx/图片/CLIP-Hand3D/CLIP_Hand_Demo/weights/CLIP_HAND_3D_0402.pth.tar'
-    DATASET_PATH = '/home/gsx/data/datasets/FreiHAND'
+    WEIGHT_PATH = '../CLIP_HAND_3D_0402.pth.tar'
+    DATASET_PATH = '../FreiHAND'
     BATCH_SIZE = 32
 
     model = CLIP_Hand_3D_PE().to(device)
