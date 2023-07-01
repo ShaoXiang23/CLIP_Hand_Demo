@@ -1,5 +1,9 @@
 # CLIP_Hand_Demo
 
+<p align="middle"> 
+<img src="https://github.com/ShaoXiang23/CLIP_Hand_Demo/blob/main/images/bs32.png" width="79%">
+</p> 
+
 ## Introduction
 A simple Zero-Shot demo for CLIP-Hand 3D.
 
