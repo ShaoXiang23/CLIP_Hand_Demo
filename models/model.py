@@ -47,55 +47,6 @@ class Pose2Feat(nn.Module):
 
         return feat
 
-class GCN_UP(nn.Module):
-    def __init__(self, in_nodes, out_nodes):
-        super(GCN_UP, self).__init__()
-        self.fc = nn.Linear(in_nodes, out_nodes)
-
-    def forward(self, X):
-        X = X.transpose(1, 2)
-        X = self.fc(X)
-        X = X.transpose(1, 2)
-
-        return X
-
-class Mesh_Regressor_blocks(nn.Module):
-    def __init__(self, joint_num, num_up, feat, feat_down, joint_feat,
-                 n_depths=2, n_headers=8, feat_size=None, PE=False):
-        super(Mesh_Regressor_blocks, self).__init__()
-
-        self.PE = PE
-        self.UP_Layer = GCN_UP(joint_num, num_up)
-        self.feat_size = feat_size
-        if self.PE:
-            self.Dim_Down = nn.Linear(feat, feat_down - 3)
-        else:
-            self.Dim_Down = nn.Linear(feat, feat_down)
-        self.Attn_Layer = Transformer(feat_down, n_depths, n_headers)
-
-        self.Dim_Project = nn.Linear(joint_feat, feat_down)
-        self.Num_Project = nn.Linear(21, num_up)
-
-        # self.dropout = nn.Dropout(0.05) # 0528
-
-    def forward(self, x, joint, F, pe=None):
-        x = self.UP_Layer(x)
-        x = self.Dim_Down(x)
-
-        # x = self.dropout(x)
-
-        if self.PE:
-            x = torch.cat([x, pe], dim=-1)
-            # short_cut = x # 0528
-
-        F_joints = project(F, joint, self.feat_size)
-        F_joints = self.Dim_Project(F_joints).transpose(-1, -2)
-        F_joints = self.Num_Project(F_joints).transpose(-1, -2)
-
-        x = self.Attn_Layer(x) + F_joints
-
-        return x
-
 def project(img_feat, joints, feat_size):
     v = joints[:, :, :2]
     v = v.unsqueeze(2)
@@ -170,37 +121,15 @@ class CLIP_Hand_3D_PE(nn.Module):
         weights_init(self.Feat_down_)
 
         ''' Mesh Regressor '''
-        self.MR_21_98_ = Mesh_Regressor_blocks(
-            self.joints_num, self.joints_lists[0],
-            self.J_dim, self.joints_dims[0],
-            joint_feat=self.joints_feats[0],
-            feat_size=self.feat_sizes[0], PE=True)
+        # pass
 
-        self.MR_98_195 = Mesh_Regressor_blocks(
-            self.joints_lists[0], self.joints_lists[1],
-            self.joints_dims[0], self.joints_dims[1],
-            joint_feat=self.joints_feats[1],
-            feat_size=self.feat_sizes[1], PE=True)
+        # weights_init(self.MR_21_98_)
+        # weights_init(self.MR_98_195)
+        # weights_init(self.MR_195_389)
+        # weights_init(self.MR_389_778)
 
-        self.MR_195_389 = Mesh_Regressor_blocks(
-            self.joints_lists[1], self.joints_lists[2],
-            self.joints_dims[1], self.joints_dims[2],
-            joint_feat=self.joints_feats[2],
-            feat_size=self.feat_sizes[2], PE=True)
-
-        self.MR_389_778 = Mesh_Regressor_blocks(
-            self.joints_lists[2], self.joints_lists[3],
-            self.joints_dims[2], self.joints_dims[3],
-            joint_feat=self.joints_feats[3],
-            feat_size=self.feat_sizes[3], PE=True)
-
-        weights_init(self.MR_21_98_)
-        weights_init(self.MR_98_195)
-        weights_init(self.MR_195_389)
-        weights_init(self.MR_389_778)
-
-        self.Out_Layer = nn.Linear(32, 3)
-        weights_init(self.Out_Layer)
+        # self.Out_Layer = nn.Linear(32, 3)
+        # weights_init(self.Out_Layer)
 
         ''' clip settings model '''
         self.latent_x_layer = nn.Linear(672, 512)
@@ -296,13 +225,7 @@ class CLIP_Hand_3D_PE(nn.Module):
         PE_778 = self.Vertx_778[None, :, :].repeat(bs, 1, 1)
 
         ''' Mesh Regressor '''
-        F_J_98 = self.MR_21_98_(F_J_21, joint_coord_img, F4, PE_98)
-        F_J_195 = self.MR_98_195(F_J_98, joint_coord_img, F3, PE_195)
-        F_J_389 = self.MR_195_389(F_J_195, joint_coord_img, F2, PE_389)
-        F_J_778 = self.MR_389_778(F_J_389, joint_coord_img, F1, PE_778)
 
-        Pred_Mesh = self.Out_Layer(F_J_778)
-        Pred_Joint = torch.bmm(self.J_Reg[None, :, :].repeat(bs, 1, 1), Pred_Mesh)
 
         ''' CLIP Forward '''
         if text is not None:
@@ -325,8 +248,6 @@ class CLIP_Hand_3D_PE(nn.Module):
 
         return {
             'joint_img': joint_coord_img,
-            'pred_verts': Pred_Mesh,
-            'joint': Pred_Joint,
 
             'latent_x': latent_x,
             'latent_y': latent_y,

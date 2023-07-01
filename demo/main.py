@@ -17,8 +17,11 @@ if __name__ == '__main__':
     BATCH_SIZE = 32
 
     model = CLIP_Hand_3D_PE().to(device)
-    model.load_state_dict(torch.load(WEIGHT_PATH))
-
+    model2_dict = model.state_dict()
+    pretrained_model = torch.load(WEIGHT_PATH)
+    state_dict = {k: v for k, v in pretrained_model.items() if k in model2_dict.keys()}
+    model2_dict.update(state_dict)
+    model.load_state_dict(model2_dict)
     model.eval()
 
     bs = BATCH_SIZE
