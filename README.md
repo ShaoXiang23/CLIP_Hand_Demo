@@ -30,7 +30,16 @@ FreiHAND Dataset
   ```
   /home/anonymous/FreiHAND
   ```
-+ Modify Parameters in demo/
++ Modify Parameters in demo/main.py
+  ```
+  WEIGHT_PATH = YOUR_WEIGHT_PATH
+  DATASET_PATH = YOUR_FreiHAND_PATH
+  BATCH_SIZE = YOUR_BS
+  ```
++ Run and Output
+  ```
+  python main.py
+  ```
 
   
   
