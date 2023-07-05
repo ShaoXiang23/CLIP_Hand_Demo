@@ -1,7 +1,7 @@
 # CLIP_Hand_Demo
 
 <p align="middle"> 
-<img src="https://github.com/ShaoXiang23/CLIP_Hand_Demo/blob/main/images/illustration.png" width="80%">
+<img src="https://github.com/ShaoXiang23/CLIP_Hand_Demo/blob/main/images/illustration.png" width="80%"> 
 </p> 
 
 ## Introduction
