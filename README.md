@@ -83,7 +83,7 @@ FreiHAND Dataset
     </p> 
 + In addition, in order to show CLIP's elevation of the model on each coordinate axis, we drew the following figure.
 <p align="middle"> 
-<img src="https://github.com/ShaoXiang23/CLIP_Hand_Demo/blob/main/images/compared.png" width="150%">
+<img src="https://github.com/ShaoXiang23/CLIP_Hand_Demo/blob/main/images/compared.png" width="125%">
 </p> 
   
   
