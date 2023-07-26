@@ -11,11 +11,6 @@ A simple Zero-Shot demo for CLIP-Hand 3D.
 <img src="https://github.com/ShaoXiang23/CLIP_Hand_Demo/blob/main/images/matrix.png" width="90%">
 </p> 
 
-+ In addition, in order to show CLIP's elevation of the model on each coordinate axis, we drew the following figure.
-<p align="middle"> 
-<img src="https://github.com/ShaoXiang23/CLIP_Hand_Demo/blob/main/images/compared.png" width="125%">
-</p> 
-
 ## Install
 + Environment
   
