@@ -7,10 +7,6 @@
 ## Introduction
 A simple Zero-Shot demo for CLIP-Hand 3D.
 
-<p align="middle"> 
-<img src="https://github.com/ShaoXiang23/CLIP_Hand_Demo/blob/main/images/matrix.png" width="90%">
-</p> 
-
 ## Install
 + Environment
   
