@@ -6,8 +6,8 @@
 <img src="https://github.com/ShaoXiang23/CLIP_Hand_Demo/blob/main/images/illustration.png" width="80%"> 
 </p> 
 
-## CLIP-Hand3D: Exploiting 3D Hand Pose Estimation via Context-Aware Prompting
-Shaoxiang Guo, Qing Cai*, Lin Qi and Junyu Dong* (*Corresponding Authors)
+*CLIP-Hand3D: Exploiting 3D Hand Pose Estimation via Context-Aware Prompting*
+*Shaoxiang Guo, Qing Cai*, Lin Qi and Junyu Dong* (*Corresponding Authors)*
 *School of Computer Science and Technology, Ocean University of China, 238 Songling Road, Qingdao, China.* 
 
 ## Introduction
