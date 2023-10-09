@@ -105,8 +105,8 @@ If you are interested in our work or if it is helpful to you, please consider ci
 
 We also referenced the following codebase, which inspired us with their outstanding work. We would like to thank the authors of the following code bases.
 
-+ lmb-freiburg[https://github.com/lmb-freiburg/freihand]
-+ MobRecon[https://github.com/SeanChenxy/HandMesh]
-+ HandAR[https://github.com/wbstx/handAR]
-+ Bihand[https://github.com/lixiny/bihand]
-+ MeshGraphormer[https://github.com/microsoft/MeshGraphormer]
++ lmb-freiburg [https://github.com/lmb-freiburg/freihand]
++ MobRecon [https://github.com/SeanChenxy/HandMesh]
++ HandAR [https://github.com/wbstx/handAR]
++ Bihand [https://github.com/lixiny/bihand]
++ MeshGraphormer [https://github.com/microsoft/MeshGraphormer]
