@@ -1,13 +1,14 @@
 # CLIP_Hand_Demo
 
-:loudspeaker: **Update (10/09/2023):** Our paper "CLIP-Hand3D: Exploiting 3D Hand Pose Estimation via Context-Aware Prompting" has been accepted at ACM MM23! Stay tuned for more updates. :tada:
+:loudspeaker: **Update (10/09/2023):** Our paper "CLIP-Hand3D: Exploiting 3D Hand Pose Estimation via Context-Aware Prompting" has been accepted at **ACM MM 2023**! Stay tuned for more updates. :tada:
 
 <p align="middle"> 
 <img src="https://github.com/ShaoXiang23/CLIP_Hand_Demo/blob/main/images/illustration.png" width="80%"> 
 </p> 
 
 ## Introduction
-A simple Zero-Shot demo for CLIP-Hand 3D.
+In our paper, we introduce CLIP-Hand3D, a novel method for 3D hand pose estimation from monocular images using Contrastive Language-Image Pre-training (CLIP). We bridge the gap between text prompts and the irregular distribution of hand joint positions in 3D space by encoding pose labels into text representations and hand joint spatial distribution into pose-aware features. We maximize the semantic consistency between pose-text features using a CLIP-based contrastive learning paradigm. Our method, which includes a coarse-to-fine mesh regressor, achieves comparable SOTA performance and significantly faster inference speed on several public hand benchmarks. 
+In this github repository, we will release the corresponding codes. First, we release a simple zero-shot demo to show the semantic relations between hand images and pose text prompts.
 
 ## Install
 + Environment
