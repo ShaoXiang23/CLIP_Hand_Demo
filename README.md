@@ -92,4 +92,17 @@ FreiHAND Dataset
     <img src="https://github.com/ShaoXiang23/CLIP_Hand_Demo/blob/main/images/bs256_4.png" width="79%">
     </p> 
   
-  
+If you are interested in our work or if it is helpful to you, please consider citing our paper:
+```
+@inproceedings{guo_clip_hand,
+  title={CLIP-Hand3D: Exploiting 3D Hand Pose Estimation via Context-Aware Prompting},
+  author={Guo, Shaoxiang and Cai, Qing and Qi, Lin and Dong, Junyu},
+  booktitle={Proceedings of the 31st ACM International Conference on Multimedia},
+  year={2023},
+  organization={ACM}
+}
+```
+
+We also referenced the following codebase, which inspired us with their outstanding work. We would like to thank the authors of the following code bases.
+
+
