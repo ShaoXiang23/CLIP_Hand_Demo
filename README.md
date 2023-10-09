@@ -17,7 +17,7 @@ In our paper, we introduce CLIP-Hand3D, a novel method for 3D hand pose estimati
 In this github repository, we will release the corresponding codes. First, we release a simple zero-shot demo to show the semantic relations between hand images and pose text prompts.
 
 <p align="middle"> 
-<img src="https://github.com/ShaoXiang23/CLIP_Hand_Demo/blob/main/images/pipeline.png" width="85%"> 
+<img src="https://github.com/ShaoXiang23/CLIP_Hand_Demo/blob/main/images/pipeline.png" width="100%"> 
 </p> 
 
 
