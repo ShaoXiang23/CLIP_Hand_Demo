@@ -1,5 +1,7 @@
 # CLIP_Hand_Demo
 
+:loudspeaker: **Update (10/09/2023):** Our paper "CLIP-Hand3D: Exploiting 3D Hand Pose Estimation via Context-Aware Prompting" has been accepted at ACM MM23! Stay tuned for more updates. :tada:
+
 <p align="middle"> 
 <img src="https://github.com/ShaoXiang23/CLIP_Hand_Demo/blob/main/images/illustration.png" width="80%"> 
 </p> 
