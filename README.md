@@ -1,5 +1,8 @@
 # CLIP_Hand_Demo
 
+:loudspeaker: **Update (11/04/2023):** Release the evaluation code on FreiHAND datasets. Stay tuned for more updates. :tada:
+
+
 :loudspeaker: **Update (10/09/2023):** Our paper "CLIP-Hand3D: Exploiting 3D Hand Pose Estimation via Context-Aware Prompting" has been accepted at **ACM MM 2023**! Stay tuned for more updates. :tada:
 
 <p align="middle"> 
