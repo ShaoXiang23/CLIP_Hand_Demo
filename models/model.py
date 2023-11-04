@@ -1,7 +1,6 @@
-from models.handAR.resnet import ResNetBackbone
-from models.handAR.posenet import make_conv_layers
-from models.handAR.posenet import PoseNet
-from models.ResNet_Simple_Encoder import ResNetSimple_decoder
+from models.resnet import ResNetBackbone
+from models.posenet import make_conv_layers
+from models.posenet import PoseNet
 from models.transformer import Transformer, AttentionPool2d
 import torch.nn.functional as F
 import torch.backends.cudnn as cudnn
