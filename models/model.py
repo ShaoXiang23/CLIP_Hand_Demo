@@ -1,19 +1,66 @@
-import random
-
-import matplotlib.pyplot as plt
-
-from models.resnet import ResNetBackbone
-from models.posenet import PoseNet, make_conv_layers
+from models.handAR.resnet import ResNetBackbone
+from models.handAR.posenet import make_conv_layers
+from models.handAR.posenet import PoseNet
+from models.ResNet_Simple_Encoder import ResNetSimple_decoder
 from models.transformer import Transformer, AttentionPool2d
 import torch.nn.functional as F
 import torch.backends.cudnn as cudnn
 import torch.nn as nn
 import numpy as np
 import torch
-import clip
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 cudnn.benchmark = True
+
+class SegmentationNet(nn.Module):
+    def __init__(self):
+        super(SegmentationNet, self).__init__()
+        self.conv1 = nn.Conv2d(2048, 1024, 1, stride=1, padding=0)
+        # self.conv1 = nn.Conv2d(2048, 1024, 3, stride=1, padding=1)
+        self.fusion1 = nn.Conv2d(1024, 1024, 3, stride=1, padding=1)
+        self.bn1 = nn.BatchNorm2d(1024)
+
+        self.conv2 = nn.Conv2d(1024, 512, 1, stride=1, padding=0)
+        # self.conv2 = nn.Conv2d(1024, 512, 3, stride=1, padding=1)
+        self.fusion2 = nn.Conv2d(512, 512, 3, stride=1, padding=1)
+        self.bn2 = nn.BatchNorm2d(512)
+
+        self.conv3 = nn.Conv2d(512, 256, 1, stride=1, padding=0)
+        # self.conv3 = nn.Conv2d(512, 256, 3, stride=1, padding=1)
+        self.fusion3 = nn.Conv2d(256, 256, 3, stride=1, padding=1)
+        self.bn3 = nn.BatchNorm2d(256)
+
+        self.conv4 = nn.Conv2d(256, 64, 1, stride=1, padding=0)
+        # self.conv3 = nn.Conv2d(512, 256, 3, stride=1, padding=1)
+        self.fusion4 = nn.Conv2d(64, 64, 3, stride=1, padding=1)
+
+        self.predict_head = nn.Sequential(nn.Conv2d(64, 16, 3, stride=1, padding=1),
+                                          nn.Conv2d(16, 1, 1))
+
+    def forward(self, img_feat, feats, feats128):  # 8 x 8
+        x = nn.functional.interpolate(img_feat, scale_factor=2, mode='bilinear')
+        x = self.conv1(x) # 16 x 16
+        x = self.fusion1(x + feats[-1])
+        x = F.relu(self.bn1(x))
+
+        x = nn.functional.interpolate(x, scale_factor=2, mode='bilinear')
+        x = self.conv2(x) # 32 x 32
+        x = self.fusion2(x + feats[-2])
+        x = F.relu(self.bn2(x))
+
+        x = nn.functional.interpolate(x, scale_factor=2, mode='bilinear')
+        x = self.conv3(x) # 64 x 64
+        x = self.fusion3(x + feats[-3])
+        x = F.relu(self.bn3(x))
+
+        x = nn.functional.interpolate(x, scale_factor=2, mode='bilinear')
+        x = self.conv4(x)
+        x = self.fusion4(x + feats128)
+
+        x = self.predict_head(x) # 128 x 128
+
+        # return F.log_softmax(x, dim=1)
+        return x
 
 def weights_init(layer):
     classname = layer.__class__.__name__
@@ -41,11 +88,75 @@ class Pose2Feat(nn.Module):
             self.joint_num * self.hm_res,
             self.hm_res,
             self.hm_res)
-        feat = torch.cat((img_feat, joint_heatmap_3d), 1)
+        feat = torch.cat((img_feat, joint_heatmap_3d),1)
         feat = self.conv0(feat)
         feat = self.conv1(feat)
 
         return feat
+
+class GCN_UP(nn.Module):
+    def __init__(self, in_nodes, out_nodes):
+        super(GCN_UP, self).__init__()
+        self.fc = nn.Linear(in_nodes, out_nodes)
+
+    def forward(self, X):
+        X = X.transpose(1, 2)
+        X = self.fc(X)
+        X = X.transpose(1, 2)
+
+        return X
+
+class Mesh_Regressor_blocks(nn.Module):
+    def __init__(self, joint_num, num_up, feat, feat_down, joint_feat,
+                 n_depths=2, n_headers=8, feat_size=None, PE=False):
+        super(Mesh_Regressor_blocks, self).__init__()
+
+        self.PE = PE
+        self.UP_Layer = GCN_UP(joint_num, num_up)
+        self.feat_size = feat_size
+        if self.PE:
+            self.Dim_Down = nn.Linear(feat, feat_down - 3)
+        else:
+            self.Dim_Down = nn.Linear(feat, feat_down)
+        self.Attn_Layer = Transformer(feat_down, n_depths, n_headers)
+
+        self.Dim_Project = nn.Linear(joint_feat, feat_down)
+        self.Num_Project = nn.Linear(21, num_up)
+
+        # self.dropout = nn.Dropout(0.05) # 0528
+
+    def forward(self, x, joint, F, pe=None):
+        x = self.UP_Layer(x)
+        x = self.Dim_Down(x)
+
+        # x = self.dropout(x)
+
+        if self.PE:
+            x = torch.cat([x, pe], dim=-1)
+            # short_cut = x # 0528
+
+        F_joints = project(F, joint, self.feat_size)
+        F_joints = self.Dim_Project(F_joints).transpose(-1, -2)
+        F_joints = self.Num_Project(F_joints).transpose(-1, -2)
+
+        x = self.Attn_Layer(x) + F_joints
+
+        return x
+
+    # def forward(self, x, joint, F, pe=None):
+    #     x = self.UP_Layer(x)
+    #     if self.PE:
+    #         x = torch.cat([x, pe], dim=-1)
+    #     x = self.Dim_Down(x)
+    #     short_cut = x
+    #
+    #     F_joints = project(F, joint, self.feat_size)
+    #     F_joints = self.Dim_Project(F_joints).transpose(-1, -2)
+    #     F_joints = self.Num_Project(F_joints).transpose(-1, -2)
+    #
+    #     x = self.Attn_Layer(x) + F_joints + short_cut
+    #
+    #     return x
 
 def project(img_feat, joints, feat_size):
     v = joints[:, :, :2]
@@ -97,11 +208,15 @@ class CLIP_Hand_3D_PE(nn.Module):
 
         ''' Visual Encoder: ResNet50 '''
         self.Encoder = ResNetBackbone(resnet_type=50)
-        # self.Encoder.init_weights()
+        self.Encoder.init_weights()
 
         ''' PoseNet '''
         self.PoseNet = PoseNet(joint_num=self.joints_num, hm_res=self.hm_res)
         weights_init(self.PoseNet)
+
+        ''' Seg '''
+        self.Seg_Decoder = SegmentationNet()
+        weights_init(self.Seg_Decoder)
 
         ''' Pose2Feat '''
         self.Pose2Feat_ = Pose2Feat(joint_num=self.joints_num, hm_res=self.hm_res)
@@ -121,15 +236,37 @@ class CLIP_Hand_3D_PE(nn.Module):
         weights_init(self.Feat_down_)
 
         ''' Mesh Regressor '''
-        # pass
+        self.MR_21_98_ = Mesh_Regressor_blocks(
+            self.joints_num, self.joints_lists[0],
+            self.J_dim, self.joints_dims[0],
+            joint_feat=self.joints_feats[0],
+            feat_size=self.feat_sizes[0], PE=True)
 
-        # weights_init(self.MR_21_98_)
-        # weights_init(self.MR_98_195)
-        # weights_init(self.MR_195_389)
-        # weights_init(self.MR_389_778)
+        self.MR_98_195 = Mesh_Regressor_blocks(
+            self.joints_lists[0], self.joints_lists[1],
+            self.joints_dims[0], self.joints_dims[1],
+            joint_feat=self.joints_feats[1],
+            feat_size=self.feat_sizes[1], PE=True)
 
-        # self.Out_Layer = nn.Linear(32, 3)
-        # weights_init(self.Out_Layer)
+        self.MR_195_389 = Mesh_Regressor_blocks(
+            self.joints_lists[1], self.joints_lists[2],
+            self.joints_dims[1], self.joints_dims[2],
+            joint_feat=self.joints_feats[2],
+            feat_size=self.feat_sizes[2], PE=True)
+
+        self.MR_389_778 = Mesh_Regressor_blocks(
+            self.joints_lists[2], self.joints_lists[3],
+            self.joints_dims[2], self.joints_dims[3],
+            joint_feat=self.joints_feats[3],
+            feat_size=self.feat_sizes[3], PE=True)
+
+        weights_init(self.MR_21_98_)
+        weights_init(self.MR_98_195)
+        weights_init(self.MR_195_389)
+        weights_init(self.MR_389_778)
+
+        self.Out_Layer = nn.Linear(32, 3)
+        weights_init(self.Out_Layer)
 
         ''' clip settings model '''
         self.latent_x_layer = nn.Linear(672, 512)
@@ -181,7 +318,7 @@ class CLIP_Hand_3D_PE(nn.Module):
                     # 'lr_mano': text['lr_mano'][i],
                     # 'tb_mano': text['tb_mano'][i]
                 }
-                result = self.forward_(x[:, 3 * i:3 * i + 3], text_i)
+                result = self.forward_(x[:, 3*i:3*i+3], text_i)
                 results.append(result)
         else:
             results = self.forward_(x, text)
@@ -205,7 +342,10 @@ class CLIP_Hand_3D_PE(nn.Module):
         '''
         joint_coord_img, heatmap_x, heatmap_y, heatmap_z = self.PoseNet(pose_img_feat)
 
+        ''' Seg Decoder '''
         if text:
+            pred_mask = self.Seg_Decoder(pose_img_feat, feats, feats128)
+        else:
             pred_mask = None
 
         ''' [B, 21, 3] -> [B, 21, 64, 64, 64] '''
@@ -225,7 +365,13 @@ class CLIP_Hand_3D_PE(nn.Module):
         PE_778 = self.Vertx_778[None, :, :].repeat(bs, 1, 1)
 
         ''' Mesh Regressor '''
+        F_J_98 = self.MR_21_98_(F_J_21, joint_coord_img, F4, PE_98)
+        F_J_195 = self.MR_98_195(F_J_98, joint_coord_img, F3, PE_195)
+        F_J_389 = self.MR_195_389(F_J_195, joint_coord_img, F2, PE_389)
+        F_J_778 = self.MR_389_778(F_J_389, joint_coord_img, F1, PE_778)
 
+        Pred_Mesh = self.Out_Layer(F_J_778)
+        Pred_Joint = torch.bmm(self.J_Reg[None, :, :].repeat(bs, 1, 1), Pred_Mesh)
 
         ''' CLIP Forward '''
         if text is not None:
@@ -248,6 +394,9 @@ class CLIP_Hand_3D_PE(nn.Module):
 
         return {
             'joint_img': joint_coord_img,
+            'pred_verts': Pred_Mesh,
+            'pred_mask': pred_mask,
+            'joint': Pred_Joint,
 
             'latent_x': latent_x,
             'latent_y': latent_y,
@@ -281,35 +430,12 @@ def speed_():
             d = time.time()
             print("FPS is {}".format(1 / (d - s)))
 
-def feature_match(
-    latent_pose_x,
-    latent_pose_y,
-    latent_pose_z,
-    near_far_features,
-    left_right_features,
-    top_down_features,
-    logit_scale1=None,
-    logit_scale2=None,
-    logit_scale3=None
-):
-    logit_scale1 = torch.clamp(logit_scale1.exp(), min=1.0, max=100.0)
-    logit_scale2 = torch.clamp(logit_scale2.exp(), min=1.0, max=100.0)
-    logit_scale3 = torch.clamp(logit_scale3.exp(), min=1.0, max=100.0)
-
-    logit_latent_nf = logit_scale1 * latent_pose_z @ near_far_features.T
-    logit_latent_lr = logit_scale2 * latent_pose_x @ left_right_features.T
-    logit_latent_td = logit_scale3 * latent_pose_y @ top_down_features.T
-
-    probs_z = logit_latent_nf.softmax(dim=-1).cpu().numpy()
-    probs_x = logit_latent_lr.softmax(dim=-1).cpu().numpy()
-    probs_y = logit_latent_td.softmax(dim=-1).cpu().numpy()
-
-    return {
-        'probs_x': probs_x,
-        'probs_y': probs_y,
-        'probs_z': probs_z,
-    }
-
-
 if __name__ == '__main__':
-    pass
+    speed_()
+
+
+
+
+
+
+
