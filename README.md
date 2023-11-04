@@ -47,6 +47,14 @@ In this github repository, we will release the corresponding codes. First, we re
 FreiHAND Dataset
 + Download [link](https://lmb.informatik.uni-freiburg.de/projects/freihand/)
 
+## Run Evaluation on FreiHAND Test Dataset
++ Download the trained-weight from this URL.
++ Run the following code
+
+  ```
+  
+  ```
+
 ## Run Zero Shot Demo
 + Put Pre-train Weights on your Ubuntu Disk, and record its location.
   
