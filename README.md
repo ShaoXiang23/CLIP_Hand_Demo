@@ -1,6 +1,6 @@
 # CLIP_Hand_Demo
 
-:loudspeaker: **Update (11/04/2023):** Release the evaluation code on FreiHAND datasets. Stay tuned for more updates. :tada:
+:loudspeaker: **Update (11/04/2023):** Release the evaluation code on FreiHAND datasets. :tada:
 
 
 :loudspeaker: **Update (10/09/2023):** Our paper "CLIP-Hand3D: Exploiting 3D Hand Pose Estimation via Context-Aware Prompting" has been accepted at **ACM MM 2023**! Stay tuned for more updates. :tada:
@@ -49,10 +49,19 @@ FreiHAND Dataset
 
 ## Run Evaluation on FreiHAND Test Dataset
 + Download the trained-weight from this URL.
+  [Pretrained-weight](https://drive.google.com/file/d/1HVhdQwpw70ih4bc7wlk8qgi8dFUdX6MY/view?usp=sharing)
 + Run the following code
-
-  ```
   
+  ```
+  python eval/eval_frei.py
+  ```
+  Remember to replace the corresponding file path in your paths.
+  ```
+  evaluation(
+        model_weight_path='/your/path/to/CLIP_Hand_3D_PE_0604_44.pth.tar',
+        Vertx_dict_path='/your/path/to/vertices.npy',
+        face_path='/your/path/to/right_faces.npy',
+  )
   ```
 
 ## Run Zero Shot Demo
